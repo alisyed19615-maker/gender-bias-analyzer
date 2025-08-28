@@ -4,321 +4,144 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EQUALOOM.AI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Your Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        /* 1. Root Variables & Base Styles */
-        :root {
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-color: #212529;
-            --subtle-text: #6c757d;
-            --border-color: #dee2e6;
-            --primary-color: #007bff;
-            --primary-text: #ffffff;
-            --hover-bg: #e9ecef;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --radius: 12px;
-        }
-
-        body.dark-mode {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e9ecef;
-            --subtle-text: #adb5bd;
-            --border-color: #343a40;
-            --primary-color: #0d6efd;
-            --hover-bg: #343a40;
-            --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
+        /* ... Your existing CSS goes here ... */
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: background 0.3s, color 0.3s;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            background: #f8f9fa;
         }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* 2. Header */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--card-bg);
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            transition: background 0.3s, border-bottom 0.3s;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo img {
-            width: 50px; /* Adjusted size for a cleaner header */
-            height: 50px;
-            border-radius: 50%;
-        }
-        
-        .logo h2 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        /* 3. Main Container & Cards */
         .main-container {
-            flex: 1;
             display: flex;
             gap: 1.5rem;
             padding: 2rem;
             max-width: 1200px;
-            width: 100%;
             margin: 0 auto;
-            flex-wrap: wrap;
-            box-sizing: border-box;
         }
-
         .card {
             flex: 1;
             min-width: 350px;
             padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            background: var(--card-bg);
-            box-shadow: var(--shadow);
-            transition: background 0.3s, border 0.3s;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        
-        .card h3 {
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        /* 4. Form Elements & Buttons */
-        textarea {
-            width: calc(100% - 20px);
-            min-height: 120px;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            resize: vertical;
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: border-color 0.2s, background-color 0.2s;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 20%, transparent);
-        }
-
-        button {
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.2s, transform 0.2s;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-        }
-        
-        .btn {
-            padding: 10px 18px;
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            color: var(--primary-text);
-            margin-top: 1rem;
-        }
-        
-        .btn-primary:hover {
-            background: color-mix(in srgb, var(--primary-color) 90%, black);
-        }
-
-        .btn-icon {
-            background: none;
-            padding: 6px 8px;
-            font-size: 22px;
-        }
-
-        .btn-icon:hover {
-            background: var(--hover-bg);
-            transform: none;
-        }
-        
-        /* 5. Analysis Display */
-        #result-container {
-            padding: 1rem;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            min-height: 50px;
-            margin-bottom: 1.5rem;
-            color: var(--subtle-text);
-            line-height: 1.6;
-            transition: background 0.3s, border 0.3s;
-        }
-
-        /* 6. Footer */
-        footer {
-            background: var(--card-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 2rem;
-            color: var(--subtle-text);
-            font-size: 14px;
-            transition: background 0.3s, border-top 0.3s;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">
-            <img src="{{ url_for('static', filename='equaloom.ai img.jpg') }}" alt="Logo">
-            <h2>EQUALOOM.AI</h2>
-        </div>
-        <div class="actions">
-            <button id="infoButton" class="btn-icon">ℹ️</button>
-            <button id="themeToggle" class="btn-icon">🌙</button>
-        </div>
+        <!-- Your header content -->
     </header>
 
     <main class="main-container">
+        <!-- Input Card -->
         <div class="card">
             <h3>Enter Text to Analyze</h3>
-            <textarea id="text-input" placeholder="✍️ Type a prompt like 'The engineer said...' to check for bias..."></textarea>
+            <textarea id="text-input" placeholder="✍️ Type a prompt like 'The engineer said...'"></textarea>
             <button id="analyze-button" class="btn btn-primary">Analyze Text</button>
         </div>
 
+        <!-- Analysis Card -->
         <div class="card">
             <h3>AI-Generated Completion</h3>
-            
-            <div id="result-container">
+            <div id="result-container" style="min-height: 50px; margin-bottom: 1.5rem;">
                 The AI's analysis will appear here...
             </div>
+            
+            <h3>Pronoun Distribution</h3>
+            <!-- The canvas element where the chart will be drawn -->
+            <canvas id="biasChart"></canvas>
         </div>
     </main>
 
     <footer>
-        <div class="footer-content">
-            </div>
+        <!-- Your footer content -->
     </footer>
 
     <script>
-        // --- PART 1: UI Functionality (Theme Toggle & Info) ---
-        const toggleButton = document.getElementById("themeToggle");
-        const infoButton = document.getElementById("infoButton");
-        const body = document.body;
-        
-        // Load saved theme from localStorage
-        if (localStorage.getItem("theme") === "dark") {
-            body.classList.add("dark-mode");
-            toggleButton.textContent = "☀️";
-        }
+        // --- UI Logic (Theme Toggle, etc.) ---
+        // ... your existing UI script ...
 
-        // Add click listener for theme toggle
-        toggleButton.addEventListener("click", () => {
-            body.classList.toggle("dark-mode");
-            if (body.classList.contains("dark-mode")) {
-                localStorage.setItem("theme", "dark");
-                toggleButton.textContent = "☀️";
-            } else {
-                localStorage.setItem("theme", "light");
-                toggleButton.textContent = "🌙";
-            }
-        });
-
-        // Add click listener for info popup
-        infoButton.addEventListener("click", () => {
-            alert("EQUALOOM.AI analyzes text for potential gender bias by completing sentences.\n\nEnter a prompt and see how the AI continues it.");
-        });
-
-        // --- PART 2: Backend Connection Logic ---
-
-        // Get references to the interactive HTML elements
+        // --- Backend Connection Logic ---
         const analyzeButton = document.getElementById('analyze-button');
         const textInput = document.getElementById('text-input');
         const resultContainer = document.getElementById('result-container');
+        const chartCanvas = document.getElementById('biasChart');
+        let biasChart = null; // Variable to hold the chart instance
 
-        // Listen for clicks on the "Analyze Text" button
         analyzeButton.addEventListener('click', () => {
             const promptText = textInput.value;
-
-            // Check if the input is empty
             if (!promptText.trim()) {
                 alert("Please enter some text to analyze.");
                 return;
             }
 
-            // Show a "loading" message to the user
             resultContainer.textContent = "Analyzing...";
-            resultContainer.style.color = 'var(--subtle-text)';
-
-            // Use the fetch API to send the data to your Python backend
-            fetch('/analyze', { // Note: We use a relative path '/analyze'
+            
+            fetch('/analyze', {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json' 
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: promptText })
             })
-            .then(response => response.json()) // Convert the server's response to JSON
+            .then(response => response.json())
             .then(data => {
-                // Display the result or an error from the backend
                 if (data.completed_text) {
                     resultContainer.textContent = data.completed_text;
-                    resultContainer.style.color = 'var(--text-color)'; // Use main text color
+                    
+                    // Call the function to update the chart with the new data
+                    updateChart(data.chart_data);
                 } else {
-                    resultContainer.textContent = "Error: " + (data.error || "Unknown error occurred.");
+                    resultContainer.textContent = "Error: " + (data.error || "Unknown error.");
                 }
             })
             .catch(error => {
-                // Handle network errors (e.g., if the backend server is down)
-                console.error('Fetch Error:', error);
-                resultContainer.textContent = "Failed to connect to the backend. Is the server running?";
+                console.error('Error:', error);
+                resultContainer.textContent = "Failed to connect to the backend.";
             });
         });
+
+        // --- Function to create or update the chart ---
+        function updateChart(chartData) {
+            // If a chart instance already exists, destroy it before creating a new one
+            if (biasChart) {
+                biasChart.destroy();
+            }
+
+            const ctx = chartCanvas.getContext('2d');
+            biasChart = new Chart(ctx, {
+                type: 'pie', // You can change this to 'bar'
+                data: {
+                    labels: ['Male Pronouns', 'Female Pronouns'],
+                    datasets: [{
+                        label: 'Pronoun Count',
+                        data: [chartData.male, chartData.female],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)', // Blue
+                            'rgba(255, 99, 132, 0.7)'  // Red
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: 'Gendered Pronoun Distribution' }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
