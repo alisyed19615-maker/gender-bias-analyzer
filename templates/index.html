@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EQUALOOM.AI</title>
+    <!-- Your Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* ... Your existing CSS goes here ... */
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+        }
+        .main-container {
+            display: flex;
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            flex: 1;
+            min-width: 350px;
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Your header content -->
+    </header>
+
+    <main class="main-container">
+        <!-- Input Card -->
+        <div class="card">
+            <h3>Enter Text to Analyze</h3>
+            <textarea id="text-input" placeholder="✍️ Type a prompt like 'The engineer said...'"></textarea>
+            <button id="analyze-button" class="btn btn-primary">Analyze Text</button>
+        </div>
+
+        <!-- Analysis Card -->
+        <div class="card">
+            <h3>AI-Generated Completion</h3>
+            <div id="result-container" style="min-height: 50px; margin-bottom: 1.5rem;">
+                The AI's analysis will appear here...
+            </div>
+            
+            <h3>Pronoun Distribution</h3>
+            <!-- The canvas element where the chart will be drawn -->
+            <canvas id="biasChart"></canvas>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Your footer content -->
+    </footer>
+
+    <script>
+        // --- UI Logic (Theme Toggle, etc.) ---
+        // ... your existing UI script ...
+
+        // --- Backend Connection Logic ---
+        const analyzeButton = document.getElementById('analyze-button');
+        const textInput = document.getElementById('text-input');
+        const resultContainer = document.getElementById('result-container');
+        const chartCanvas = document.getElementById('biasChart');
+        let biasChart = null; // Variable to hold the chart instance
+
+        analyzeButton.addEventListener('click', () => {
+            const promptText = textInput.value;
+            if (!promptText.trim()) {
+                alert("Please enter some text to analyze.");
+                return;
+            }
+
+            resultContainer.textContent = "Analyzing...";
+            
+            fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: promptText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.completed_text) {
+                    resultContainer.textContent = data.completed_text;
+                    
+                    // Call the function to update the chart with the new data
+                    updateChart(data.chart_data);
+                } else {
+                    resultContainer.textContent = "Error: " + (data.error || "Unknown error.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultContainer.textContent = "Failed to connect to the backend.";
+            });
+        });
+
+        // --- Function to create or update the chart ---
+        function updateChart(chartData) {
+            // If a chart instance already exists, destroy it before creating a new one
+            if (biasChart) {
+                biasChart.destroy();
+            }
+
+            const ctx = chartCanvas.getContext('2d');
+            biasChart = new Chart(ctx, {
+                type: 'pie', // You can change this to 'bar'
+                data: {
+                    labels: ['Male Pronouns', 'Female Pronouns'],
+                    datasets: [{
+                        label: 'Pronoun Count',
+                        data: [chartData.male, chartData.female],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)', // Blue
+                            'rgba(255, 99, 132, 0.7)'  // Red
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: 'Gendered Pronoun Distribution' }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
