@@ -7,7 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Include the Chart.js library for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        /* 1. Root Variables & Base Styles */
         :root {
             --bg-color: #f8f9fa;
             --card-bg: #ffffff;
@@ -19,6 +24,8 @@
             --hover-bg: #e9ecef;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             --radius: 12px;
+            --chart-bias-color: rgba(255, 99, 132, 0.7);
+            --chart-neutral-color: rgba(54, 162, 235, 0.7);
         }
 
         body.dark-mode {
@@ -30,6 +37,8 @@
             --primary-color: #0d6efd;
             --hover-bg: #343a40;
             --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            --chart-bias-color: rgba(255, 99, 132, 0.6);
+            --chart-neutral-color: rgba(54, 162, 235, 0.6);
         }
 
         body {
@@ -42,25 +51,8 @@
             flex-direction: column;
             min-height: 100vh;
         }
-        
-        /* ... other styles ... */
-        
-        textarea {
-            width: calc(100% - 20px);
-            min-height: 200px; /* MODIFIED: Increased from 120px */
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            resize: vertical;
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: border-color 0.2s, background-color 0.2s;
-        }
 
-        /* ... All of your other CSS styles ... */
-
+        /* 2. Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -73,13 +65,72 @@
             top: 0;
             z-index: 10;
         }
+
         .logo { display: flex; align-items: center; gap: 12px; }
         .logo img { width: 50px; height: 50px; border-radius: 50%; }
         .logo h2 { margin: 0; font-size: 20px; font-weight: 700; }
-        .main-container { flex: 1; display: flex; gap: 1.5rem; padding: 2rem; max-width: 1200px; width: 100%; margin: 0 auto; flex-wrap: wrap; box-sizing: border-box; }
-        .card { flex: 1; min-width: 350px; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--card-bg); box-shadow: var(--shadow); }
-        .btn-primary { background: var(--primary-color); color: var(--primary-text); margin-top: 1rem; padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; }
-        .btn-primary:disabled { background-color: var(--subtle-text); cursor: not-allowed; }
+        .actions { display: flex; gap: 8px; }
+
+        /* 3. Main Container & Cards */
+        .main-container {
+            flex: 1;
+            display: flex;
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            align-items: stretch;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 350px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card h3 { margin-top: 0; margin-bottom: 1.5rem; font-size: 18px; }
+
+        /* 4. Form Elements & Buttons */
+        textarea {
+            width: calc(100% - 20px);
+            min-height: 200px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            flex-grow: 1;
+        }
+
+        button { font-size: 16px; border: none; cursor: pointer; border-radius: 8px; transition: background-color 0.2s, transform 0.2s; font-family: 'Inter', sans-serif; font-weight: 500; }
+        .btn-primary { background: var(--primary-color); color: var(--primary-text); margin-top: 1rem; padding: 10px 18px; }
+        .btn-primary:disabled { background-color: var(--subtle-text); cursor: not-allowed; transform: none; }
+        .btn-icon { background: none; padding: 6px 8px; font-size: 22px; }
+        .btn-icon:hover { background: var(--hover-bg); transform: none; }
+
+        /* 5. Stats & Analysis Display */
+        .stats-grid { margin-top: 2rem; display: grid; gap: 1rem; }
+        .stat-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-color); border-radius: 8px; }
+        
+        /* 6. Footer */
+        footer { background: var(--card-bg); border-top: 1px solid var(--border-color); padding: 2rem; color: var(--subtle-text); font-size: 14px; }
+        .footer-content { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; max-width: 1200px; margin: 0 auto; }
+        .footer-section { min-width: 250px; }
+        .footer-section h4 { margin: 0 0 1rem 0; color: var(--text-color); }
+        .footer-section p { margin: 0; line-height: 1.6; }
+        .footer-links a { color: var(--subtle-text); text-decoration: none; display: block; margin-bottom: 0.5rem; }
+        .footer-links a:hover { color: var(--primary-color); }
+        .footer-bottom { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); text-align: center; font-size: 13px; }
 
     </style>
 </head>
@@ -98,28 +149,27 @@
     <main class="main-container">
         <div class="card">
             <h3>Enter a social media post</h3>
-            <textarea id="text-input" placeholder="✍️  Type or paste your content here to analyze it for fairness and inclusivity..."></textarea>
+            <textarea id="text-input" placeholder="✍️ Type or paste your content here..."></textarea>
             <button id="analyze-button" class="btn-primary">Analyze Post</button>
-
-            <div class="stats-grid" style="margin-top: 2rem; display: grid; gap: 1rem;">
-                <div class="stat-item" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-color); border-radius: 8px;">
+            <div class="stats-grid">
+                <div class="stat-item">
                     <span class="stat-item-icon">⚪</span>
                     <div class="stat-item-info">
-                        <strong>Neutral: 0</strong>
+                        <strong id="neutral-count">Neutral: 0</strong>
                         <small>Balanced, no significant bias detected.</small>
                     </div>
                 </div>
-                <div class="stat-item" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-color); border-radius: 8px;">
+                <div class="stat-item">
                     <span class="stat-item-icon">⚖️</span>
                     <div class="stat-item-info">
-                        <strong>Equality: 0</strong>
+                        <strong id="equality-count">Equality: 0</strong>
                         <small>Promotes fair and inclusive content.</small>
                     </div>
                 </div>
-                <div class="stat-item" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-color); border-radius: 8px;">
+                <div class="stat-item">
                      <span class="stat-item-icon">🚫</span>
                      <div class="stat-item-info">
-                        <strong>Bias: 0</strong>
+                        <strong id="bias-count">Bias: 0</strong>
                         <small>Contains potential stereotypes or discrimination.</small>
                     </div>
                 </div>
@@ -128,62 +178,77 @@
 
         <div class="card">
             <h3>Analysis Breakdown</h3>
-            <div class="chart-placeholder" style="height: 150px; border: 2px dashed var(--border-color); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
-                <span>Chart Area</span>
+            <div class="chart-container" style="height: 150px; margin-bottom: 1.5rem; position: relative;">
+                <canvas id="confidenceChart"></canvas>
             </div>
-             <div class="chart-placeholder" style="height: 150px; border: 2px dashed var(--border-color); border-radius: var(--radius); display: flex; align-items: center; justify-content: center;">
-                <span>Historical Data Area</span>
+            <div class="chart-placeholder" style="border: 2px dashed var(--border-color); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--subtle-text); flex-grow: 1;">
+                <span>Historical Data (Future Feature)</span>
             </div>
         </div>
     </main>
 
     <footer>
-        <div class="footer-content" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; max-width: 1200px; margin: 0 auto;">
+        <div class="footer-content">
             <div class="footer-section">
                 <h4>Project By</h4>
-                <p>SYED MOHAMMAD ALI SAJJAD<br>FAROOQUE ABDULLAH</p>
+                <p>
+                    SYED MOHAMMAD ALI SAJJAD<br>
+                    FAROOQUE ABDULLAH
+                </p>
             </div>
             <div class="footer-section">
                 <h4>EQUALOOM.AI</h4>
-                <p>An AI-powered tool to promote fairness and inclusivity.</p>
+                <p>
+                    An AI-powered tool to promote fairness and inclusivity in online communication.
+                </p>
             </div>
             <div class="footer-section">
                 <h4>Quick Links</h4>
-                 <div class="footer-links">
+                <div class="footer-links">
                     <a href="#">About</a>
                     <a href="#">Privacy Policy</a>
                 </div>
             </div>
         </div>
-        <div class="footer-bottom" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <div class="footer-bottom">
             <p>&copy; 2025 EQUALOOM.AI &mdash; All Rights Reserved.</p>
         </div>
     </footer>
 
     <script>
-        // --- Theme Toggle and Info Button Logic ---
+        // --- UI Functionality (Theme Toggle & Info) ---
         const toggleButton = document.getElementById("themeToggle");
         const infoButton = document.getElementById("infoButton");
         const body = document.body;
+        
         if (localStorage.getItem("theme") === "dark") {
             body.classList.add("dark-mode");
             toggleButton.textContent = "☀️";
         }
+
         toggleButton.addEventListener("click", () => {
             body.classList.toggle("dark-mode");
-            localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
-            toggleButton.textContent = body.classList.contains("dark-mode") ? "☀️" : "🌙";
-        });
-        infoButton.addEventListener("click", () => {
-            alert("EQUALOOM.AI analyzes posts for gender equality & bias.");
+            if (body.classList.contains("dark-mode")) {
+                localStorage.setItem("theme", "dark");
+                toggleButton.textContent = "☀️";
+            } else {
+                localStorage.setItem("theme", "light");
+                toggleButton.textContent = "🌙";
+            }
         });
 
-        // --- Analysis Button Logic ---
-        const analyzeButton = document.getElementById("analyze-button");
-        const textInput = document.getElementById("text-input");
-        const neutralCountEl = document.querySelector('.stat-item:nth-child(1) strong');
-        const equalityCountEl = document.querySelector('.stat-item:nth-child(2) strong');
-        const biasCountEl = document.querySelector('.stat-item:nth-child(3) strong');
+        infoButton.addEventListener("click", () => {
+            alert("EQUALOOM.AI analyzes posts for gender equality & bias.\n\nThis tool is designed to promote fairness and inclusivity in online communication.");
+        });
+
+        // --- Backend Connection Logic ---
+        const analyzeButton = document.getElementById('analyze-button');
+        const textInput = document.getElementById('text-input');
+        const neutralCountEl = document.getElementById('neutral-count');
+        const equalityCountEl = document.getElementById('equality-count');
+        const biasCountEl = document.getElementById('bias-count');
+        const chartCanvas = document.getElementById('confidenceChart');
+        let confidenceChart = null; 
 
         analyzeButton.addEventListener('click', () => {
             const textToAnalyze = textInput.value;
@@ -202,24 +267,55 @@
             })
             .then(response => response.json())
             .then(data => {
-                if(data.stats) {
-                    // Update the stats grid with the data from the backend
-                    neutralCountEl.textContent = `Neutral: ${data.stats.neutral}`;
-                    equalityCountEl.textContent = `Equality: ${data.stats.equality}`;
-                    biasCountEl.textContent = `Bias: ${data.stats.bias}`;
-                } else {
-                    alert('Error: ' + (data.error || 'Could not get analysis.'));
+                if (data.error) {
+                    alert("Error: " + data.error);
+                    return;
                 }
+                neutralCountEl.textContent = `Neutral: ${data.stats.neutral}`;
+                equalityCountEl.textContent = `Equality: ${data.stats.equality}`;
+                biasCountEl.textContent = `Bias: ${data.stats.bias}`;
+                updateChart(data.classification);
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred connecting to the backend.');
+                alert("A connection error occurred. Please ensure the backend server is running.");
             })
             .finally(() => {
                 analyzeButton.textContent = "Analyze Post";
                 analyzeButton.disabled = false;
             });
         });
+
+        function updateChart(classificationData) {
+            if (confidenceChart) {
+                confidenceChart.destroy();
+            }
+            const ctx = chartCanvas.getContext('2d');
+            const scorePercent = classificationData.score * 100;
+            const isBiased = classificationData.label === 'Biased';
+            const chartLabel = isBiased ? `Confidence of Bias: ${scorePercent.toFixed(1)}%` : `Confidence of Neutrality: ${scorePercent.toFixed(1)}%`;
+            const chartColor = isBiased ? getComputedStyle(document.documentElement).getPropertyValue('--chart-bias-color') : getComputedStyle(document.documentElement).getPropertyValue('--chart-neutral-color');
+            
+            confidenceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [classificationData.label],
+                    datasets: [{
+                        label: 'Confidence Score',
+                        data: [scorePercent],
+                        backgroundColor: [chartColor],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { x: { beginAtZero: true, max: 100, ticks: { callback: function(value) { return value + "%" } } } },
+                    plugins: { legend: { display: false }, title: { display: true, text: chartLabel, color: getComputedStyle(document.documentElement).getPropertyValue('--text-color') } }
+                }
+            });
+        }
     </script>
 </body>
 </html>
