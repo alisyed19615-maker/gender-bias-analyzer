@@ -1,29 +1,24 @@
-# app.py
-
 from flask import Flask, request, jsonify, render_template
 from transformers import pipeline
 
-print("Loading toxicity detection model...")
+# --- Load the Bias Classification Model ---
+print("Loading bias detection model... This may take a moment.")
 try:
-    # This command tells the model to use the safe, writable cache directory.
-    classifier = pipeline(
-        "text-classification", 
-        model="unitary/toxic-bert", 
-        cache_dir="/code/.cache"
-    )
+    classifier = pipeline("text-classification", model="valurank/distilroberta-bias")
     print("Model loaded successfully!")
 except Exception as e:
     print(f"Error loading classifier: {e}")
     classifier = None
 
-# ... the rest of your app.py code remains the same ...
-
+# Create the Flask application
 app = Flask(__name__)
 
+# --- Main Page Route ---
 @app.route('/')
 def home():
     return render_template('index.html')
 
+# --- Analysis API Route ---
 @app.route('/analyze', methods=['POST'])
 def analyze():
     if classifier is None:
@@ -43,7 +38,8 @@ def analyze():
         stats = {"neutral": 0, "equality": 0, "bias": 0}
         is_truly_biased = False
 
-        if label == 'TOXIC' and score > 0.75:
+        # --- Check if the model is confident in its 'BIASED' prediction ---
+        if label == 'BIASED' and score > 0.75:
             is_truly_biased = True
             stats['bias'] = 1
         else:
