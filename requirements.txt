@@ -2,4 +2,3 @@ Flask
 transformers
 torch
 sentencepiece
-gunicorn
