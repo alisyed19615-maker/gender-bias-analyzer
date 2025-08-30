@@ -1,21 +1,17 @@
 # app.py
 
-# This environment variable setting is a good backup.
-import os
-os.environ['TRANSFORMERS_CACHE'] = '/tmp'
-
+# No longer need os.environ
 from flask import Flask, request, jsonify, render_template
 from transformers import pipeline
 
 # --- Load the Classification Model ---
 print("Loading toxicity detection model...")
 try:
-    # Added cache_dir='/tmp' to directly command where to save the model.
-    
+    # MODIFIED: Point directly to the new, writable cache directory we created.
     classifier = pipeline(
         "text-classification", 
         model="unitary/toxic-bert", 
-        cache_dir="/tmp"
+        cache_dir="/code/.cache"
     )
     print("Model loaded successfully!")
 except Exception as e:
@@ -30,7 +26,7 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
-# --- Analysis API Route ---
+# --- Analysis API Route (No changes needed here) ---
 @app.route('/analyze', methods=['POST'])
 def analyze():
     if classifier is None:
