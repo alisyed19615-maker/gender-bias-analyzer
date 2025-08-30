@@ -118,22 +118,10 @@
         .btn-icon { background: none; padding: 6px 8px; font-size: 22px; }
         .btn-icon:hover { background: var(--hover-bg); transform: none; }
 
-        /* 5. Stats, Analysis & Explanation Display */
+        /* 5. Stats & Analysis Display */
         .stats-grid { margin-top: 2rem; display: grid; gap: 1rem; }
         .stat-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-color); border-radius: 8px; }
         
-        #explanation-container {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: var(--radius);
-            background-color: var(--hover-bg);
-            border: 1px solid var(--border-color);
-            display: none; /* Hidden by default */
-            flex-grow: 1; /* Allows it to fill space */
-        }
-        #explanation-container h4 { margin-top: 0; color: var(--text-color); }
-        #explanation-text { color: var(--subtle-text); line-height: 1.6; }
-
         /* 6. Footer */
         footer { background: var(--card-bg); border-top: 1px solid var(--border-color); padding: 2rem; color: var(--subtle-text); font-size: 14px; }
         .footer-content { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; max-width: 1200px; margin: 0 auto; }
@@ -193,11 +181,8 @@
             <div class="chart-container" style="height: 150px; margin-bottom: 1.5rem; position: relative;">
                 <canvas id="confidenceChart"></canvas>
             </div>
-            
-            <!-- NEW: Explanation Container -->
-            <div id="explanation-container">
-                <h4>Why might this be biased?</h4>
-                <p id="explanation-text"></p>
+            <div class="chart-placeholder" style="border: 2px dashed var(--border-color); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--subtle-text); flex-grow: 1;">
+                <span>Historical Data (Future Feature)</span>
             </div>
         </div>
     </main>
@@ -253,7 +238,7 @@
         });
 
         infoButton.addEventListener("click", () => {
-            alert("EQUALOOM.AI analyzes posts for potential gender bias.\n\nThis tool is designed to promote fairness and inclusivity in online communication.");
+            alert("EQUALOOM.AI analyzes posts for gender equality & bias.\n\nThis tool is designed to promote fairness and inclusivity in online communication.");
         });
 
         // --- Backend Connection Logic ---
@@ -263,8 +248,6 @@
         const equalityCountEl = document.getElementById('equality-count');
         const biasCountEl = document.getElementById('bias-count');
         const chartCanvas = document.getElementById('confidenceChart');
-        const explanationContainer = document.getElementById('explanation-container');
-        const explanationText = document.getElementById('explanation-text');
         let confidenceChart = null; 
 
         analyzeButton.addEventListener('click', () => {
@@ -276,7 +259,6 @@
 
             analyzeButton.textContent = "Analyzing...";
             analyzeButton.disabled = true;
-            explanationContainer.style.display = 'none'; // Hide old explanation on new analysis
 
             fetch('/analyze', {
                 method: 'POST',
@@ -293,12 +275,6 @@
                 equalityCountEl.textContent = `Equality: ${data.stats.equality}`;
                 biasCountEl.textContent = `Bias: ${data.stats.bias}`;
                 updateChart(data.classification);
-
-                // NEW: Handle and display the explanation
-                if (data.explanation) {
-                    explanationText.textContent = data.explanation;
-                    explanationContainer.style.display = 'block'; // Show the container
-                }
             })
             .catch(error => {
                 console.error('Error:', error);

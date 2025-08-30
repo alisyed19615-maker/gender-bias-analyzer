@@ -1,24 +1,17 @@
+# app.py
+
 from flask import Flask, request, jsonify, render_template
 from transformers import pipeline
 
-# --- Load Model 1: The Fast Bias Classifier ---
-print("Loading bias detection model...")
+# --- Load the More Robust Classification Model ---
+print("Loading toxicity detection model...")
 try:
-    classifier = pipeline("text-classification", model="valurank/distilroberta-bias")
-    print("Classifier loaded successfully!")
+    # This model is better at detecting insults and overt bias.
+    classifier = pipeline("text-classification", model="unitary/toxic-bert")
+    print("Model loaded successfully!")
 except Exception as e:
     print(f"Error loading classifier: {e}")
     classifier = None
-
-# --- Load Model 2: The Bias Explainer (LLM) ---
-print("Loading text generation model for explanations...")
-try:
-    # This is a small language model that can generate text.
-    explainer = pipeline("text-generation", model="distilgpt2")
-    print("Explainer model loaded successfully!")
-except Exception as e:
-    print(f"Error loading explainer model: {e}")
-    explainer = None
 
 app = Flask(__name__)
 
@@ -30,8 +23,8 @@ def home():
 # --- Analysis API Route ---
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    if classifier is None or explainer is None:
-        return jsonify({"error": "One or more AI models are not available."}), 500
+    if classifier is None:
+        return jsonify({"error": "AI model is not available."}), 500
 
     data = request.get_json()
     prompt = data.get('text', '')
@@ -39,43 +32,34 @@ def analyze():
         return jsonify({"error": "Invalid input."}), 400
 
     try:
-        # --- Step 1: Fast Check with the Classifier ---
+        # --- Step 1: Classify the text ---
         results = classifier(prompt)
         top_result = results[0]
+        # This model uses the label 'toxic' for negative content
         label = top_result['label'].upper()
         score = top_result['score']
         
         stats = {"neutral": 0, "equality": 0, "bias": 0}
-        explanation = None # Default explanation is None
+        is_truly_biased = False
 
-        # --- Step 2: If Biased, ask the LLM for an Explanation ---
-        if label == 'BIASED':
+        # --- Check if the model confidently flags the text as TOXIC ---
+        # We'll treat "TOXIC" as our indicator for "Biased"
+        if label == 'TOXIC' and score > 0.75:
+            is_truly_biased = True
             stats['bias'] = 1
-            
-            # Create a specific prompt for the explainer model
-            explainer_prompt = f"The sentence '{prompt}' is considered biased because"
-            
-            # Generate the explanation
-            output = explainer(explainer_prompt, max_length=50, num_return_sequences=1)
-            generated_text = output[0]['generated_text']
-            
-            # Clean up the output to get just the explanation part
-            explanation = generated_text.replace(explainer_prompt, "").strip()
-
-        else: # The other label is 'NOT BIASED'
+        else:
             stats['neutral'] = 1
             stats['equality'] = 1 
 
         classification_data = {
-            "label": "Biased" if label == 'BIASED' else "Neutral",
+            "label": "Biased" if is_truly_biased else "Neutral",
             "score": score
         }
 
-        # --- Send all data back to the frontend ---
+        # --- Return the data to the frontend ---
         return jsonify({
             "stats": stats,
-            "classification": classification_data,
-            "explanation": explanation # Will be the text or None
+            "classification": classification_data
         })
 
     except Exception as e:
@@ -83,4 +67,3 @@ def analyze():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
