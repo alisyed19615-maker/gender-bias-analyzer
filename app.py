@@ -1,9 +1,8 @@
 # app.py
 
-# These lines MUST be at the very top of the file, before importing transformers
+# This environment variable setting is a good backup.
 import os
 os.environ['TRANSFORMERS_CACHE'] = '/tmp'
-
 
 from flask import Flask, request, jsonify, render_template
 from transformers import pipeline
@@ -11,7 +10,13 @@ from transformers import pipeline
 # --- Load the Classification Model ---
 print("Loading toxicity detection model...")
 try:
-    classifier = pipeline("text-classification", model="unitary/toxic-bert")
+    # MODIFIED: Added cache_dir='/tmp' to directly command where to save the model.
+    # This is a more robust fix for the PermissionError.
+    classifier = pipeline(
+        "text-classification", 
+        model="unitary/toxic-bert", 
+        cache_dir="/tmp"
+    )
     print("Model loaded successfully!")
 except Exception as e:
     print(f"Error loading classifier: {e}")
