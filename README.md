@@ -2,7 +2,7 @@
 title: EQUALOOM.AI
 emoji: ⚖️
 colorFrom: blue
-sdk: flask
+sdk: docker
 pinned: false
 ---
 

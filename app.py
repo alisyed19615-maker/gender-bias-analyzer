@@ -67,3 +67,17 @@ def analyze():
 
 if __name__ == '__main__':
     app.run(debug=True)
+import os
+os.environ['TRANSFORMERS_CACHE'] = '/code/.cache'
+os.environ['HF_HOME'] = '/code/.cache'
+os.environ['HF_DATASETS_CACHE'] = '/code/.cache'
+os.environ['HF_METRICS_CACHE'] = '/code/.cache'
+os.environ['XDG_CACHE_HOME'] = '/code/.cache'
+os.environ['TORCH_HOME'] = '/code/.cache'
+os.environ['WANDB_CACHE_DIR'] = '/code/.cache'
+os.environ['HF_HUB_OFFLINE'] = '1'  # Optional: Force offline mode if needed
+os.environ['HF_HUB_DISABLE_TELEMETRY'] = '1'  # Optional: Disable telemetry if needed
+os.environ['HF_ALLOW_CODE_DOWNLOAD'] = '1'  # Optional: Allow code download if needed
+os.environ['HF_ALLOW_REMOTE_CODE'] = '1'  # Optional: Allow remote code if needed   
+# Ensure the cache directory exists
+os.makedirs('/code/.cache', exist_ok=True)
