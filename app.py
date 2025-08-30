@@ -11,7 +11,7 @@ from transformers import pipeline
 print("Loading toxicity detection model...")
 try:
     # Added cache_dir='/tmp' to directly command where to save the model.
-    # This is a more robust fix for the PermissionError.
+    
     classifier = pipeline(
         "text-classification", 
         model="unitary/toxic-bert", 
