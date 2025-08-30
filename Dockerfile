@@ -11,8 +11,8 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # Copy the rest of the app's code
 COPY . .
 
-# NEW: Create a cache directory inside our app and make sure it's writable
+# Create a cache directory inside our app and make sure it's writable
 RUN mkdir -p /code/.cache && chmod -R 777 /code/.cache
 
-# Tell the container what command to run
+# Tell the container what command to run when it starts
 CMD ["flask", "run", "--host=0.0.0.0", "--port=7860"]

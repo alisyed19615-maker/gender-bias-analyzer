@@ -1,13 +1,11 @@
 # app.py
 
-# No longer need os.environ
 from flask import Flask, request, jsonify, render_template
 from transformers import pipeline
 
-# --- Load the Classification Model ---
 print("Loading toxicity detection model...")
 try:
-    # MODIFIED: Point directly to the new, writable cache directory we created.
+    # This command tells the model to use the safe, writable cache directory.
     classifier = pipeline(
         "text-classification", 
         model="unitary/toxic-bert", 
@@ -18,15 +16,14 @@ except Exception as e:
     print(f"Error loading classifier: {e}")
     classifier = None
 
-# Create the Flask application
+# ... the rest of your app.py code remains the same ...
+
 app = Flask(__name__)
 
-# --- Main Page Route ---
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# --- Analysis API Route (No changes needed here) ---
 @app.route('/analyze', methods=['POST'])
 def analyze():
     if classifier is None:
@@ -62,22 +59,9 @@ def analyze():
             "stats": stats,
             "classification": classification_data
         })
+
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
-import os
-os.environ['TRANSFORMERS_CACHE'] = '/code/.cache'
-os.environ['HF_HOME'] = '/code/.cache'
-os.environ['HF_DATASETS_CACHE'] = '/code/.cache'
-os.environ['HF_METRICS_CACHE'] = '/code/.cache'
-os.environ['XDG_CACHE_HOME'] = '/code/.cache'
-os.environ['TORCH_HOME'] = '/code/.cache'
-os.environ['WANDB_CACHE_DIR'] = '/code/.cache'
-os.environ['HF_HUB_OFFLINE'] = '1'  # Optional: Force offline mode if needed
-os.environ['HF_HUB_DISABLE_TELEMETRY'] = '1'  # Optional: Disable telemetry if needed
-os.environ['HF_ALLOW_CODE_DOWNLOAD'] = '1'  # Optional: Allow code download if needed
-os.environ['HF_ALLOW_REMOTE_CODE'] = '1'  # Optional: Allow remote code if needed   
-# Ensure the cache directory exists
-os.makedirs('/code/.cache', exist_ok=True)
