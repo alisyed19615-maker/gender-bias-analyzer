@@ -1,0 +1,479 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+/* 1. Root Variables & Base Styles */
+:root {
+    --bg-gradient-start: #fff0f3;
+    /* Soft Blush */
+    --bg-gradient-end: #ffe3e8;
+    /* slightly deeper pink */
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --text-color: #4a4a4a;
+    /* Softer than black */
+    --heading-color: #880e4f;
+    /* Deep pink/burgundy */
+    --subtle-text: #868e96;
+    --border-color: rgba(255, 255, 255, 0.6);
+    --primary-color: #d63384;
+    /* Soft Magenta */
+    --primary-hover: #c2185b;
+    --primary-text: #ffffff;
+    --hover-bg: rgba(214, 51, 132, 0.1);
+    --shadow: 0 10px 30px rgba(214, 51, 132, 0.1);
+    --radius: 20px;
+    --chart-bias-color: rgba(255, 99, 132, 0.8);
+    --chart-neutral-color: rgba(75, 192, 192, 0.8);
+    --highlight-color: #ffd54f;
+    /* Amber for highlights */
+    --rewrite-bg: #e8f5e9;
+    /* Light green for rewrite */
+    --rewrite-border: #a5d6a7;
+    --error-bg: #ffebee;
+    --error-border: #ef9a9a;
+}
+
+body.dark-mode {
+    --bg-gradient-start: #1a0b12;
+    --bg-gradient-end: #2d121b;
+    --card-bg: rgba(30, 30, 30, 0.9);
+    --text-color: #e0e0e0;
+    --heading-color: #f8bbd0;
+    --subtle-text: #b0bec5;
+    --border-color: #4a4a4a;
+    --primary-color: #f48fb1;
+    --primary-hover: #f06292;
+    --primary-text: #2d121b;
+    --hover-bg: rgba(244, 143, 177, 0.1);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --highlight-color: #ffb74d;
+    --rewrite-bg: #1b5e20;
+    --rewrite-border: #2e7d32;
+    --error-bg: #b71c1c;
+    --error-border: #d32f2f;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    color: var(--text-color);
+    transition: background 0.3s, color 0.3s;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-attachment: fixed;
+}
+
+/* 2. Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo h2 {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--heading-color);
+    letter-spacing: 0.5px;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* 3. Main Container & Cards */
+.main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* Stack on mobile, row on desktop handled by media query */
+    gap: 2rem;
+    padding: 3rem 2rem;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .main-container {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.card {
+    flex: 1;
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    /* Glassmorphism */
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--heading-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    display: inline-block;
+    width: fit-content;
+}
+
+/* 4. Form Elements & Buttons */
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    /* Important for padding */
+    min-height: 220px;
+    padding: 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 16px;
+    resize: vertical;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    background: rgba(255, 255, 255, 0.5);
+    /* Semi-transparent input */
+    color: var(--text-color);
+    transition: border-color 0.3s, background 0.3s;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: #ffffff;
+}
+
+button {
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 50px;
+    /* Pill shape */
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--primary-text);
+    margin-top: 1.5rem;
+    padding: 14px 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+    align-self: flex-start;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 6px 20px rgba(214, 51, 132, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    background-color: var(--subtle-text);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-icon {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 50%;
+    color: var(--heading-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.btn-icon:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: rotate(15deg);
+}
+
+/* 5. Stats & Analysis Display */
+.stats-grid {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 1.2rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    border-left: 5px solid transparent;
+    transition: background 0.3s;
+}
+
+.stat-item:hover {
+    background: white;
+}
+
+.stat-item:nth-child(1) {
+    border-left-color: #4bc0c0;
+    /* Neutral Teal */
+}
+
+.stat-item:nth-child(2) {
+    border-left-color: #9966ff;
+    /* Equality Purple */
+}
+
+.stat-item:nth-child(3) {
+    border-left-color: #ff6384;
+    /* Bias Pink */
+}
+
+.stat-item-icon {
+    font-size: 24px;
+}
+
+.stat-item-info strong {
+    display: block;
+    font-size: 1.1em;
+    margin-bottom: 4px;
+    color: var(--text-color);
+}
+
+.stat-item-info small {
+    color: var(--subtle-text);
+}
+
+/* 6. Footer */
+footer {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border-color);
+    padding: 3rem 2rem;
+    color: var(--subtle-text);
+    font-size: 14px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.footer-section h4 {
+    margin: 0 0 1.2rem 0;
+    color: var(--heading-color);
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+}
+
+.footer-links a {
+    color: var(--subtle-text);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.8rem;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* 7. New Result & History Styles */
+
+.hidden {
+    display: none !important;
+}
+
+.result-section {
+    margin-top: 1.5rem;
+    animation: fadeIn 0.5s ease;
+}
+
+.result-section h4 {
+    margin-bottom: 0.8rem;
+    font-family: 'Playfair Display', serif;
+    color: var(--heading-color);
+    font-size: 1.1rem;
+}
+
+.highlight-box,
+.rewrite-box {
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.highlight-box {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px dashed var(--subtle-text);
+}
+
+.rewrite-box {
+    background: var(--rewrite-bg);
+    border: 1px solid var(--rewrite-border);
+    color: var(--text-color);
+}
+
+.highlight-word {
+    background-color: var(--highlight-color);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: 500;
+    color: #333;
+    /* Ensure contrast on highlight */
+}
+
+/* History List */
+.history-container {
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+#history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+}
+
+.history-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+    margin-right: 15px;
+    overflow: hidden;
+}
+
+.history-text {
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    /* Truncate long text in history */
+}
+
+.history-date {
+    font-size: 0.75rem;
+    color: var(--subtle-text);
+}
+
+.history-badge {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.badge-neutral {
+    background-color: #e0f2f1;
+    color: #00695c;
+}
+
+.badge-bias {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.placeholder-text {
+    text-align: center;
+    color: var(--subtle-text);
+    padding: 20px;
+    font-style: italic;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
