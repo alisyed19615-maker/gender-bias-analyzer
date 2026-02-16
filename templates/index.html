@@ -4,184 +4,479 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EQUALOOM.AI</title>
+    <title>Equaloom.ai | Inclusive Communication</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='equaloom.ai img.svg') }}">
+
+    <!-- Google Fonts: Lora (Serif) & Inter (Sans) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 
-    <!-- Include the Chart.js library for visualizations -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Link to Custom CSS -->
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 
 <body>
+    <!-- 1. Header / Navbar -->
     <header>
         <div class="logo">
-            <img src="{{ url_for('static', filename='equaloom.ai img.jpg') }}" alt="Logo">
-            <h2>EQUALOOM.AI</h2>
+            <img src="{{ url_for('static', filename='equaloom.ai img.svg') }}" alt="Equaloom Logo">
+            <h2>Equaloom.ai</h2>
         </div>
+
+        <nav class="nav-links">
+            <a href="#" id="nav-dashboard" class="nav-link active"
+                onclick="switchView('dashboard'); return false;">Dashboard</a>
+            <a href="#" id="nav-library" class="nav-link" onclick="switchView('library'); return false;">Library</a>
+            <a href="#" id="nav-community" class="nav-link"
+                onclick="switchView('community'); return false;">Community</a>
+            <a href="#" id="nav-about" class="nav-link" onclick="switchView('about'); return false;">About</a>
+        </nav>
+
         <div class="actions">
-            <button id="infoButton" class="btn-icon">ℹ️</button>
-            <button id="themeToggle" class="btn-icon">🌙</button>
+            <button id="themeToggle" class="btn-icon-subtle" title="Toggle Theme">🌙</button>
+            <button class="btn-icon-subtle" title="Notifications">🔔</button>
+            <button id="infoButton" class="btn-icon-subtle" title="Profile">👤</button>
         </div>
     </header>
 
-    <main class="main-container">
-        <div class="card">
-            <h3>Enter a social media post</h3>
-            <textarea id="text-input" placeholder="✍️ Type or paste your content here..."></textarea>
-            <button id="analyze-button" class="btn-primary">Analyze Post</button>
+    <!-- VIEW: DASHBOARD -->
+    <div id="view-dashboard" class="view-container">
+        <!-- 2. Hero Section -->
+        <section class="hero">
+            <h1>Create Safer Conversations.</h1>
+            <p>Detect bias, empower voices, and ensure your message shines with inclusivity.</p>
+        </section>
 
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-item-icon">⚪</span>
-                    <div class="stat-item-info">
-                        <strong id="neutral-count">Neutral: 0</strong>
-                        <small>Balanced, no significant bias detected.</small>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-item-icon">⚖️</span>
-                    <div class="stat-item-info">
-                        <strong id="equality-count">Equality: 0</strong>
-                        <small>Promotes fair and inclusive content.</small>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-item-icon">🚫</span>
-                    <div class="stat-item-info">
-                        <strong id="bias-count">Bias: 0</strong>
-                        <small>Contains potential stereotypes or discrimination.</small>
-                    </div>
+        <!-- 3. Main Grid Layout -->
+        <main class="main-container">
+            <!-- Left Column: Input -->
+            <div class="card">
+                <h3>Analyze Content</h3>
+                <textarea id="text-input"
+                    placeholder="Share your thoughts... we'll help you ensure they shine with inclusivity."></textarea>
+
+                <div style="display: flex; justify-content: flex-end;">
+                    <button id="analyze-button" class="btn-primary">Analyze Content</button>
                 </div>
             </div>
 
-            <!-- New Result Sections -->
-            <div id="highlight-section" class="result-section hidden">
-                <h4>⚠️ Potential Issues Found</h4>
-                <div id="highlight-content" class="highlight-box"></div>
+            <!-- Right Column: Results Dashboard -->
+            <div class="card">
+                <h3>Analysis Insights</h3>
+
+                <!-- Stats Pills -->
+                <div class="stats-grid">
+                    <div class="stat-pill neutral" id="pill-neutral">Neutral</div>
+                    <div class="stat-pill equality" id="pill-equality">Equality</div>
+                    <div class="stat-pill bias" id="pill-bias">Bias Detected</div>
+                </div>
+
+                <!-- Gauge Card -->
+                <div class="gauge-card">
+                    <div style="height: 160px; position: relative;">
+                        <canvas id="confidenceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Highlight Section -->
+                <div id="highlight-section" class="result-section hidden">
+                    <div class="highlight-box"
+                        style="background:#fff3e0; padding:1rem; border-radius:12px; border:1px solid #ffe0b2;">
+                        <strong style="color:#ef6c00; font-size:0.9rem; display:block; margin-bottom:0.5rem;">⚠️
+                            Potential Issues</strong>
+                        <div id="highlight-content" style="color:#5d4037;"></div>
+                    </div>
+                </div>
+
+                <!-- Rewrite Section -->
+                <div id="rewrite-section" class="result-section hidden">
+                    <div class="rewrite-box">
+                        <span class="rewrite-label">✨ Inclusive Suggestion</span>
+                        <button class="copy-btn" onclick="copyRewrite()">Copy</button>
+                        <div id="rewrite-content" class="rewrite-text"></div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <h4
+                    style="margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
+                    Recent History</h4>
+                <div class="history-container">
+                    <div id="history-list">
+                        <div style="padding: 1rem; color: var(--text-muted); text-align: center; font-style: italic;">No
+                            recent analyses.</div>
+                    </div>
+                </div>
+
+                <!-- Hidden IDs for legacy JS compatibility -->
+                <div style="display:none;">
+                    <span id="neutral-count"></span>
+                    <span id="equality-count"></span>
+                    <span id="bias-count"></span>
+                </div>
+            </div>
+        </main>
+
+        <!-- 4. Empowerment Tips Section -->
+        <section class="main-container" style="padding-top: 0; display: block;">
+            <div class="tips-section">
+                <h3
+                    style="text-align: center; font-family: 'Lora', serif; color: var(--primary-plum); margin-bottom: 3rem;">
+                    Empowerment Tips</h3>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <span class="tip-icon">🗣️</span>
+                        <h4>Language Matters</h4>
+                        <p>Words shape reality. Using inclusive terms like "salesperson" instead of "salesman" invites
+                            everyone to the table.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🧠</span>
+                        <h4>Challenge Assumptions</h4>
+                        <p>Pause before assigning gender. Does the context strictly require it? If not, opt for
+                            neutrality.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">📢</span>
+                        <h4>Amplify Voices</h4>
+                        <p>When you see diverse contributions, highlight them. Make space for underrepresented
+                            perspectives.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- VIEW: LIBRARY (New) -->
+    <div id="view-library" class="view-container hidden">
+        <section class="hero">
+            <h1>Knowledge Library</h1>
+            <p>Resources to help you build a more inclusive vocabulary and culture.</p>
+        </section>
+
+        <main class="main-container">
+            <div class="tips-grid" style="width: 100%;">
+
+                <!-- Library Card 1 -->
+                <div class="tip-card" style="text-align: left; border-top-color: var(--primary-rose);">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <span class="tip-icon" style="font-size:2rem; padding:0.8rem;">📚</span>
+                        <span class="history-badge badge-neutral">Guide</span>
+                    </div>
+                    <h4>The Inclusive Dictionary</h4>
+                    <p style="margin-bottom: 1.5rem;">A comprehensive A-Z guide of gender-neutral terms for modern
+                        professional settings.</p>
+                    <button class="btn-primary" style="padding: 10px 24px; font-size: 0.9rem; margin-top:0;">Read
+                        Guide</button>
+                </div>
+
+                <!-- Library Card 2 -->
+                <div class="tip-card" style="text-align: left; border-top-color: var(--accent-gold);">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <span class="tip-icon" style="font-size:2rem; padding:0.8rem;">💼</span>
+                        <span class="history-badge badge-neutral">Training</span>
+                    </div>
+                    <h4>Corporate Communication</h4>
+                    <p style="margin-bottom: 1.5rem;">Best practices for writing job descriptions, emails, and policies
+                        that attract diverse talent.</p>
+                    <button class="btn-primary" style="padding: 10px 24px; font-size: 0.9rem; margin-top:0;">Start
+                        Module</button>
+                </div>
+
+                <!-- Library Card 3 -->
+                <div class="tip-card" style="text-align: left; border-top-color: var(--primary-plum);">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <span class="tip-icon" style="font-size:2rem; padding:0.8rem;">🧠</span>
+                        <span class="history-badge badge-neutral">Article</span>
+                    </div>
+                    <h4>Unconscious Bias 101</h4>
+                    <p style="margin-bottom: 1.5rem;">Understand how hidden biases shape our language and
+                        decision-making processes.</p>
+                    <button class="btn-primary" style="padding: 10px 24px; font-size: 0.9rem; margin-top:0;">Learn
+                        More</button>
+                </div>
+                <!-- Library Card 4 -->
+                <div class="tip-card" style="text-align: left; border-top-color: var(--status-supportive);">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <span class="tip-icon" style="font-size:2rem; padding:0.8rem;">📧</span>
+                        <span class="history-badge badge-neutral">Template</span>
+                    </div>
+                    <h4>Inclusive Email Templates</h4>
+                    <p style="margin-bottom: 1.5rem;">Ready-to-use templates for team announcements, invitations, and
+                        daily correspondence.</p>
+                    <button class="btn-primary"
+                        style="padding: 10px 24px; font-size: 0.9rem; margin-top:0;">Download</button>
+                </div>
+
             </div>
 
-            <div id="rewrite-section" class="result-section hidden">
-                <h4>✨ Suggested Rewrite</h4>
-                <div id="rewrite-content" class="rewrite-box"></div>
+            <!-- Recommended Books Section -->
+            <h3 style="margin-top: 4rem; margin-bottom: 1rem; font-family: 'Lora', serif; color: var(--primary-plum);">
+                Recommended Books for Inclusive Thinking</h3>
+            <p style="margin-bottom: 2rem; color: var(--text-muted);">Curated reads to deepen understanding of gender
+                equity, leadership, and bias awareness.</p>
+
+            <div class="tips-grid" style="width: 100%; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+
+                <!-- Book 1 -->
+                <article class="book-card">
+                    <div class="book-cover-placeholder" style="background: linear-gradient(135deg, #ef5350, #c62828);">
+                        IW</div>
+                    <span class="book-tag tag-bias">Bias</span>
+                    <div class="book-details" style="display: flex; flex-direction: column; flex-grow: 1;">
+                        <h4>Invisible Women</h4>
+                        <span class="author">by Caroline Criado Perez</span>
+                        <p>How data bias impacts women in technology, workplaces, and society.</p>
+                        <button class="book-cta">Explore Book</button>
+                    </div>
+                </article>
+
+                <!-- Book 2 -->
+                <article class="book-card">
+                    <div class="book-cover-placeholder" style="background: linear-gradient(135deg, #42a5f5, #1565c0);">
+                        LI</div>
+                    <span class="book-tag tag-leadership">Leadership</span>
+                    <div class="book-details" style="display: flex; flex-direction: column; flex-grow: 1;">
+                        <h4>Lean In</h4>
+                        <span class="author">by Sheryl Sandberg</span>
+                        <p>Practical insights on confidence, career growth, and women in leadership roles.</p>
+                        <button class="book-cta">Explore Book</button>
+                    </div>
+                </article>
+
+                <!-- Book 3 -->
+                <article class="book-card">
+                    <div class="book-cover-placeholder" style="background: linear-gradient(135deg, #ab47bc, #7b1fa2);">
+                        FEM</div>
+                    <span class="book-tag tag-feminism">Inclusion</span>
+                    <div class="book-details" style="display: flex; flex-direction: column; flex-grow: 1;">
+                        <h4>We Should All Be Feminists</h4>
+                        <span class="author">by Chimamanda Ngozi Adichie</span>
+                        <p>A powerful introduction to modern feminism and gender equality awareness.</p>
+                        <button class="book-cta">Explore Book</button>
+                    </div>
+                </article>
+
+                <!-- Book 4 -->
+                <article class="book-card">
+                    <div class="book-cover-placeholder" style="background: linear-gradient(135deg, #ffa726, #ef6c00);">
+                        AG</div>
+                    <span class="book-tag tag-bias">Communication</span>
+                    <div class="book-details" style="display: flex; flex-direction: column; flex-grow: 1;">
+                        <h4>The Authority Gap</h4>
+                        <span class="author">by Mary Ann Sieghart</span>
+                        <p>Why women are taken less seriously and how perception gaps can be closed.</p>
+                        <button class="book-cta">Explore Book</button>
+                    </div>
+                </article>
+
+                <!-- Book 5 -->
+                <article class="book-card">
+                    <div class="book-cover-placeholder" style="background: linear-gradient(135deg, #66bb6a, #2e7d32);">
+                        IL</div>
+                    <span class="book-tag tag-leadership">Workplace</span>
+                    <div class="book-details" style="display: flex; flex-direction: column; flex-grow: 1;">
+                        <h4>How to Be an Inclusive Leader</h4>
+                        <span class="author">by Jennifer Brown</span>
+                        <p>Strategies for building inclusive teams and equitable workplace cultures.</p>
+                        <button class="book-cta">Explore Book</button>
+                    </div>
+                </article>
+
+                <!-- Book 6 -->
+                <article class="book-card">
+                    <div class="book-cover-placeholder" style="background: linear-gradient(135deg, #8d6e63, #5d4037);">
+                        UN</div>
+                    <span class="book-tag tag-empowerment">Empowerment</span>
+                    <div class="book-details" style="display: flex; flex-direction: column; flex-grow: 1;">
+                        <h4>Untamed</h4>
+                        <span class="author">by Glennon Doyle</span>
+                        <p>A journey of self-discovery and reclaiming authentic identity.</p>
+                        <button class="book-cta">Explore Book</button>
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <!-- VIEW: COMMUNITY (Placeholder) -->
+    <div id="view-community" class="view-container hidden">
+        <section class="hero">
+            <h1>Community Hub</h1>
+            <p>Connect with others committed to inclusive communication.</p>
+        </section>
+        <main class="main-container" style="text-align: center; padding: 4rem;">
+            <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+                <span style="font-size: 4rem;">🤝</span>
+                <h3>Coming Soon</h3>
+                <p>We are building a space for you to share stories, ask questions, and grow together.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- VIEW: ABOUT -->
+    <div id="view-about" class="view-container hidden">
+        <section class="hero">
+            <h1>About Equaloom.ai</h1>
+            <p>Empowering inclusive communication through AI-driven gender bias detection.</p>
+        </section>
+
+        <main class="main-container">
+            <!-- Project Overview -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <h2 style="font-family: 'Lora', serif; color: var(--primary-plum); margin-top:0;">What is Equaloom.ai?
+                </h2>
+                <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-dark);">
+                    Equaloom.ai is an AI-powered platform designed to analyze social media and written content to detect
+                    gender bias, promote inclusive language, and support respectful communication across digital
+                    platforms.
+                </p>
+                <div style="margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem;">
+                    <span class="stat-pill neutral active">Gender Bias Detection</span>
+                    <span class="stat-pill equality active">Inclusion Scoring</span>
+                    <span class="stat-pill bias active">Sentiment Analysis</span>
+                    <span class="stat-pill neutral active">AI Rescripting</span>
+                </div>
             </div>
 
-        </div>
-
-        <div class="card">
-            <h3>Analysis Breakdown</h3>
-            <div class="chart-container" style="height: 150px; margin-bottom: 1.5rem; position: relative;">
-                <canvas id="confidenceChart"></canvas>
+            <!-- Mission & Vision -->
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <div class="card" style="background: linear-gradient(135deg, #F3E5F5 0%, #fff 100%);">
+                    <h3 style="color: var(--primary-plum);">Mission</h3>
+                    <p>Promote gender equality and respectful communication in digital spaces.</p>
+                </div>
+                <div class="card" style="background: linear-gradient(135deg, #FCE4EC 0%, #fff 100%);">
+                    <h3 style="color: var(--primary-rose);">Vision</h3>
+                    <p>Create safer online environments where everyone feels valued and heard.</p>
+                </div>
             </div>
 
-            <h3>Recent History</h3>
-            <div class="history-container">
-                <ul id="history-list">
-                    <!-- History items will be injected here -->
-                    <li class="placeholder-text">Loading history...</li>
-                </ul>
+            <!-- Tech Stack -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <h3>Technology Stack</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span class="history-badge badge-neutral" style="font-size: 0.9rem;">HTML5 / CSS3</span>
+                    <span class="history-badge badge-neutral" style="font-size: 0.9rem;">JavaScript (ES6)</span>
+                    <span class="history-badge badge-neutral" style="font-size: 0.9rem;">Python / Flask</span>
+                    <span class="history-badge badge-neutral" style="font-size: 0.9rem;">NLP / ML</span>
+                    <span class="history-badge badge-neutral" style="font-size: 0.9rem;">Chart.js</span>
+                </div>
             </div>
-        </div>
-    </main>
+
+            <!-- Developer Profile -->
+            <div class="card" style="text-align: center;">
+                <div
+                    style="width: 120px; height: 120px; background: linear-gradient(135deg, #ddd, #eee); border-radius: 50%; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 4px solid white; box-shadow: var(--shadow-soft);">
+                    👨‍💻</div>
+                <h2 style="font-family: 'Lora', serif; color: var(--primary-plum); margin: 0;">Sajjad</h2>
+                <p style="color: var(--primary-rose); font-weight: 600; margin-bottom: 0.5rem;">Engineering Student &
+                    Developer</p>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Creator of Equaloom.ai</p>
+
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <a href="https://github.com/your-username" target="_blank" class="book-cta"
+                        style="text-decoration: none; padding: 10px 24px; width:auto; text-align:center;">GitHub
+                        Profile</a>
+                    <button class="book-cta" style="width: auto; padding: 10px 24px;">Contact</button>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div style="text-align: center; margin-top: 4rem;">
+                <h2 style="font-family: 'Lora', serif; font-size: 2rem; margin-bottom: 1rem;">Join the movement toward
+                    inclusive communication.</h2>
+                <button class="btn-primary" onclick="switchView('dashboard')">Explore Platform</button>
+            </div>
+        </main>
+    </div>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>Project By</h4>
-                <p>
-                    SYED MOHAMMAD ALI SAJJAD<br>
-                    FAROOQUE ABDULLAH
-                </p>
-            </div>
-            <div class="footer-section">
-                <h4>EQUALOOM.AI</h4>
-                <p>
-                    An AI-powered tool to promote fairness and inclusivity in online communication.
-                </p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <div class="footer-links">
-                    <a href="#">About</a>
-                    <a href="#">Privacy Policy</a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 EQUALOOM.AI &mdash; All Rights Reserved.</p>
-        </div>
+        <p>&copy; 2025 Equaloom.ai &mdash; Designed for Inclusive Conversations.</p>
     </footer>
 
     <script>
-        // --- UI Functionality (Theme Toggle & Info) ---
-        const toggleButton = document.getElementById("themeToggle");
-        const infoButton = document.getElementById("infoButton");
-        const body = document.body;
+        // --- View Navigation Logic ---
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-container').forEach(el => el.classList.add('hidden'));
 
+            // Show selected view
+            const selectedView = document.getElementById(`view-${viewName}`);
+            if (selectedView) selectedView.classList.remove('hidden');
+
+            // Update Nav State
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            const customNavId = `nav-${viewName}`;
+            const navLink = document.getElementById(customNavId);
+            if (navLink) navLink.classList.add('active');
+        }
+
+        // --- Core UI Logic ---
+        const toggleButton = document.getElementById("themeToggle");
+        const body = document.body;
         if (localStorage.getItem("theme") === "dark") {
             body.classList.add("dark-mode");
             toggleButton.textContent = "☀️";
         }
-
         toggleButton.addEventListener("click", () => {
             body.classList.toggle("dark-mode");
-            if (body.classList.contains("dark-mode")) {
-                localStorage.setItem("theme", "dark");
-                toggleButton.textContent = "☀️";
-            } else {
-                localStorage.setItem("theme", "light");
-                toggleButton.textContent = "🌙";
-            }
+            localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+            toggleButton.textContent = body.classList.contains("dark-mode") ? "☀️" : "🌙";
         });
 
-        infoButton.addEventListener("click", () => {
-            alert("EQUALOOM.AI analyzes posts for gender equality & bias.\n\nThis tool is designed to promote fairness and inclusivity in online communication.");
-        });
+        function copyRewrite() {
+            const text = document.getElementById("rewrite-content").textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector(".copy-btn");
+                const original = btn.textContent;
+                btn.textContent = "Copied!";
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
 
-        // --- Backend Connection Logic ---
+        // --- Backend Integration (Dashboard Only) ---
         const analyzeButton = document.getElementById('analyze-button');
         const textInput = document.getElementById('text-input');
-        const neutralCountEl = document.getElementById('neutral-count');
-        const equalityCountEl = document.getElementById('equality-count');
-        const biasCountEl = document.getElementById('bias-count');
         const chartCanvas = document.getElementById('confidenceChart');
 
-        // New elements
         const highlightSection = document.getElementById('highlight-section');
         const highlightContent = document.getElementById('highlight-content');
         const rewriteSection = document.getElementById('rewrite-section');
         const rewriteContent = document.getElementById('rewrite-content');
         const historyList = document.getElementById('history-list');
 
+        const pills = {
+            neutral: document.getElementById('pill-neutral'),
+            equality: document.getElementById('pill-equality'),
+            bias: document.getElementById('pill-bias')
+        };
+
         let confidenceChart = new Chart(chartCanvas.getContext('2d'), {
-            type: 'bar',
+            type: 'doughnut',
             data: {
-                labels: ['Neutral', 'Equality', 'Bias'],
+                labels: ['Neutral', 'Bias'],
                 datasets: [{
-                    label: 'Confidence Score',
-                    data: [0, 0, 0],
-                    backgroundColor: [
-                        getComputedStyle(document.documentElement).getPropertyValue('--chart-neutral-color'),
-                        getComputedStyle(document.documentElement).getPropertyValue('--chart-neutral-color'),
-                        getComputedStyle(document.documentElement).getPropertyValue('--chart-bias-color')
-                    ],
-                    borderWidth: 1
+                    data: [100, 0],
+                    backgroundColor: ['#E0E0E0', '#F5F5F5'],
+                    borderWidth: 0
                 }]
             },
             options: {
-                indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: { x: { beginAtZero: true, max: 100, ticks: { callback: function (value) { return value + "%" } } } },
-                plugins: { legend: { display: false }, title: { display: true, text: 'Ready to Analyze', color: getComputedStyle(document.documentElement).getPropertyValue('--text-color') } }
+                cutout: '80%',
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
             }
         });
 
-        // Load history on startup
+        // Load History (only relevant for dashboard view, but safe to load globally)
         fetchHistory();
 
         analyzeButton.addEventListener('click', () => {
@@ -193,10 +488,11 @@
 
             analyzeButton.textContent = "Analyzing...";
             analyzeButton.disabled = true;
+            analyzeButton.classList.add('analyzing');
 
-            // Reset UI
             highlightSection.classList.add('hidden');
             rewriteSection.classList.add('hidden');
+            Object.values(pills).forEach(p => p.classList.remove('active'));
 
             fetch('/analyze', {
                 method: 'POST',
@@ -205,74 +501,81 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.error) {
-                        alert("Error: " + data.error);
-                        return;
-                    }
-                    neutralCountEl.textContent = `Neutral: ${data.stats.neutral}`;
-                    equalityCountEl.textContent = `Equality: ${data.stats.equality}`;
-                    biasCountEl.textContent = `Bias: ${data.stats.bias}`;
+                    if (data.error) { alert("Error: " + data.error); return; }
+
+                    if (data.stats.neutral) pills.neutral.classList.add('active');
+                    if (data.stats.equality) pills.equality.classList.add('active');
+                    if (data.stats.bias) pills.bias.classList.add('active');
+
                     updateChart(data.classification);
 
-                    // Display Highlights
                     if (data.highlights && data.highlights.length > 0) {
                         let highlightedText = textToAnalyze;
-                        // Simple replace for display purposes (careful with overlaps, but sufficient for simple demo)
                         data.highlights.forEach(word => {
                             const regex = new RegExp(`\\b${word}\\b`, 'gi');
-                            highlightedText = highlightedText.replace(regex, `<span class="highlight-word">${word}</span>`);
+                            highlightedText = highlightedText.replace(regex, `<span style="background:rgba(255,213,79,0.4); padding:0 2px; border-radius:4px; font-weight:600;">${word}</span>`);
                         });
                         highlightContent.innerHTML = highlightedText;
                         highlightSection.classList.remove('hidden');
                     }
 
-                    // Display Rewrite
                     if (data.rewrite) {
                         rewriteContent.textContent = data.rewrite;
                         rewriteSection.classList.remove('hidden');
                     }
 
-                    // Refresh History
                     fetchHistory();
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("A connection error occurred. Please ensure the backend server is running.");
-                })
+                .catch(error => { console.error(error); alert("Server error."); })
                 .finally(() => {
-                    analyzeButton.textContent = "Analyze Post";
+                    analyzeButton.textContent = "Analyze Content";
                     analyzeButton.disabled = false;
+                    analyzeButton.classList.remove('analyzing');
                 });
         });
 
         function updateChart(classificationData) {
-            if (confidenceChart) {
-                confidenceChart.destroy();
-            }
+            if (confidenceChart) confidenceChart.destroy();
             const ctx = chartCanvas.getContext('2d');
-            const scorePercent = classificationData.score * 100;
+            const score = classificationData.score * 100;
             const isBiased = classificationData.label === 'Biased';
-            const chartLabel = isBiased ? `Confidence of Bias: ${scorePercent.toFixed(1)}%` : `Confidence of Neutrality: ${scorePercent.toFixed(1)}%`;
-            const chartColor = isBiased ? getComputedStyle(document.documentElement).getPropertyValue('--chart-bias-color') : getComputedStyle(document.documentElement).getPropertyValue('--chart-neutral-color');
 
             confidenceChart = new Chart(ctx, {
-                type: 'bar',
+                type: 'doughnut',
                 data: {
-                    labels: [classificationData.label],
+                    labels: ['Score', 'Remaining'],
                     datasets: [{
-                        label: 'Confidence Score',
-                        data: [scorePercent],
-                        backgroundColor: [chartColor],
-                        borderWidth: 1
+                        data: [score, 100 - score],
+                        backgroundColor: [
+                            isBiased ? '#EC407A' : '#66BB6A',
+                            '#F5F5F5'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 20
                     }]
                 },
                 options: {
-                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { x: { beginAtZero: true, max: 100, ticks: { callback: function (value) { return value + "%" } } } },
-                    plugins: { legend: { display: false }, title: { display: true, text: chartLabel, color: getComputedStyle(document.documentElement).getPropertyValue('--text-color') } }
-                }
+                    cutout: '85%',
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } }
+                },
+                plugins: [{
+                    id: 'textCenter',
+                    beforeDraw: function (chart) {
+                        var width = chart.width, height = chart.height, ctx = chart.ctx;
+                        ctx.restore();
+                        var fontSize = (height / 100).toFixed(2);
+                        ctx.font = "bold " + fontSize + "em Lora";
+                        ctx.textBaseline = "middle";
+                        ctx.fillStyle = isBiased ? "#EC407A" : "#66BB6A";
+                        var text = score.toFixed(0) + "%",
+                            textX = Math.round((width - ctx.measureText(text).width) / 2),
+                            textY = height / 2;
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }]
             });
         }
 
@@ -282,28 +585,27 @@
                 .then(data => {
                     historyList.innerHTML = '';
                     if (data.length === 0) {
-                        historyList.innerHTML = '<li class="placeholder-text">No history yet.</li>';
+                        historyList.innerHTML = '<div style="padding: 1rem; color: var(--text-muted); text-align: center; font-style: italic;">No recent analyses.</div>';
                         return;
                     }
                     data.forEach(item => {
-                        const li = document.createElement('li');
-                        li.className = 'history-item';
-
-                        const scorePercent = (item.score * 100).toFixed(0);
+                        const div = document.createElement('div');
+                        div.className = 'history-item';
+                        const score = (item.score * 100).toFixed(0);
                         const isBiased = item.label === 'Biased';
                         const badgeClass = isBiased ? 'badge-bias' : 'badge-neutral';
 
-                        li.innerHTML = `
-                            <div class="history-content">
-                                <span class="history-text">${item.text}</span>
-                                <span class="history-date">${new Date(item.timestamp).toLocaleTimeString()}</span>
+                        div.innerHTML = `
+                            <div style="display:flex; flex-direction:column; gap:4px; max-width:70%;">
+                                <strong style="font-weight:600; color:var(--text-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.text}</strong>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">${new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
-                            <span class="history-badge ${badgeClass}">${item.label} ${scorePercent}%</span>
+                            <span class="history-badge ${badgeClass}">${item.label} ${score}%</span>
                         `;
-                        historyList.appendChild(li);
+                        historyList.appendChild(div);
                     });
                 })
-                .catch(err => console.error("Error loading history:", err));
+                .catch(err => console.error(err));
         }
     </script>
 </body>
